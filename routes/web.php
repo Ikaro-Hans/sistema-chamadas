@@ -8,6 +8,7 @@ use App\Http\Controllers\ChamadaController;
 
 Route::middleware(['auth'])->group(function () {
     // Rotas do usuário
+    Route::resource('chamadas', ChamadaController::class);
     Route::get('/chamadas', [ChamadaController::class, 'index'])->name('chamadas.index');
     Route::post('/chamadas', [ChamadaController::class, 'store'])->name('chamadas.store');
 

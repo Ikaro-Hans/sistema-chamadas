@@ -13,14 +13,14 @@
                     <p class="mb-6">{{ __("Gerencie suas chamadas de forma fácil e rápida.") }}</p>
                     
                     <!-- Botões de navegação -->
-                    <div class="flex space-x-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <a href="{{ route('chamadas.create') }}" 
-                           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                           class="block text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md">
                             {{ __('Criar Nova Chamada') }}
                         </a>
                         
                         <a href="{{ route('chamadas.index') }}" 
-                           class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                           class="block text-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md">
                             {{ __('Ver Minhas Chamadas') }}
                         </a>
                     </div>

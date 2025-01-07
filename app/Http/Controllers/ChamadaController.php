@@ -34,6 +34,18 @@ class ChamadaController extends Controller
         return redirect()->route('chamadas.index')->with('success', 'Chamada criada com sucesso!');
     }
 
+    // ChamadaController.php
+
+    public function show($id)
+    {
+        // Encontre a chamada pelo ID fornecido
+        $chamada = Chamada::findOrFail($id);
+
+        // Retorne a view com os detalhes da chamada
+        return view('chamadas.show', compact('chamada'));
+    }
+
+
 
     public function create()
     {
