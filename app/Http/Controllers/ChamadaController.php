@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Chamada;
+use App\Models\Setor;
+
+
+class ChamadaController extends Controller
+{
+    public function index()
+    {
+        $chamadas = Auth::user()->chamadas()->get();
+        return view('chamadas.index', compact('chamadas'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descricao' => 'required|string',
+            'setor_id' => 'required|exists:setores,id',
+            'prioridade' => 'required|string|in:baixa,media,alta',
+        ]);
+
+        $validated['user_id'] = Auth::id();
+        $validated['status'] = 'pendente'; // Adicione o status diretamente
+
+        Chamada::create($validated);
+
+        return redirect()->route('chamadas.index')->with('success', 'Chamada criada com sucesso!');
+    }
+
+
+    public function create()
+    {
+        // Obtenha os setores disponíveis para o formulário
+        $setores = Setor::all();
+
+        // Retorne a view de criação com os setores
+        return view('chamadas.create', compact('setores'));
+    }
+}
