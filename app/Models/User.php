@@ -13,17 +13,15 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Chamada[] $chamadas
  */
 class User extends Authenticatable
-
 {
 
-    use HasFactory, Notifiable;
-
+    use HasFactory, Notifiable, HasRoles;
 
 
     /**
