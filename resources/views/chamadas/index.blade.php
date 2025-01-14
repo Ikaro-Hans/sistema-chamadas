@@ -9,9 +9,11 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <a href="{{ route('chamadas.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4 inline-block">
-                        {{ __('Nova Chamada') }}
-                    </a>
+                    @if (!Auth::user()->hasRole('admin'))
+                        <a href="{{ route('chamadas.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4 inline-block">
+                            {{ __('Nova Chamada') }}
+                        </a>
+                    @endif
 
                     @if($chamadas->isEmpty())
                         <p class="text-center text-gray-500">{{ __('Nenhuma chamada encontrada.') }}</p>

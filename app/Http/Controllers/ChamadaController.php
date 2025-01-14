@@ -13,7 +13,13 @@ class ChamadaController extends Controller
 {
     public function index()
     {
-        $chamadas = Auth::user()->chamadas()->get();
+        if(Auth::user()->hasRole('admin')) {
+            $chamadas = Chamada::all();
+
+        } else {
+            $chamadas = Auth::user()->chamadas()->get();
+        }
+
         return view('chamadas.index', compact('chamadas'));
     }
 
