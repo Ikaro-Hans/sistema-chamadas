@@ -2,39 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Chamada;
 use App\Models\Setor;
 
-
 class ChamadaController extends Controller
 {
+    // Exibe a lista de chamadas
     public function index(Request $request)
     {
+        $status = $request->get('status', 'pendente'); // Filtro de status
+        $query = Chamada::query();
 
-    $status = $request->get('status', 'pendente');
-    $query = Chamada::query();
-
-    if ($status !== 'todas') {
-        $query->where('status', '!=', 'concluida');
-    }
-
-    $chamadas = $query->orderBy('created_at', 'desc')->get();
-
-    return view('chamadas.index', compact('chamadas'));
-
-        if(Auth::user()->hasRole('admin')) {
-            $chamadas = Chamada::all();
-
+        if (Auth::user()->hasRole('admin')) {
+            if ($status !== 'todas') {
+                $query->where('status', '!=', 'concluida'); // Filtra não concluídas
+            }
         } else {
-            $chamadas = Auth::user()->chamadas()->get();
+            $query->where('user_id', Auth::id()); // Apenas chamadas do usuário
         }
+
+        $chamadas = $query->orderBy('created_at', 'desc')->get();
 
         return view('chamadas.index', compact('chamadas'));
     }
 
+    // Exibe o formulário de criação
+    public function create()
+    {
+        $setores = Setor::all(); // Obtém os setores para o formulário
+        return view('chamadas.create', compact('setores'));
+    }
+
+    // Salva uma nova chamada
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -42,46 +43,47 @@ class ChamadaController extends Controller
             'descricao' => 'required|string',
             'setor_id' => 'required|exists:setores,id',
             'prioridade' => 'required|string|in:baixa,media,alta',
+            'arquivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
-        $validated['user_id'] = Auth::id();
-        $validated['status'] = 'pendente'; // Adicione o status diretamente
+        $arquivoPath = null;
+        if ($request->hasFile('arquivo')) {
+            $arquivoPath = $request->file('arquivo')->store('chamadas', 'public');
+        }
 
-        Chamada::create($validated);
+        Chamada::create([
+            'titulo' => $validated['titulo'],
+            'descricao' => $validated['descricao'],
+            'setor_id' => $validated['setor_id'],
+            'prioridade' => $validated['prioridade'],
+            'arquivo' => $arquivoPath,
+            'status' => 'pendente',
+            'user_id' => Auth::id(),
+        ]);
 
         return redirect()->route('chamadas.index')->with('success', 'Chamada criada com sucesso!');
     }
 
-    // ChamadaController.php
-
+    // Exibe os detalhes de uma chamada
     public function show($id)
     {
-        // Encontre a chamada pelo ID fornecido
-        $chamada = Chamada::findOrFail($id);
+        $chamada = Chamada::findOrFail($id); // Encontra a chamada ou retorna 404
 
-        // Retorne a view com os detalhes da chamada
         return view('chamadas.show', compact('chamada'));
     }
 
-
-
-    public function create()
-    {
-        // Obtenha os setores disponíveis para o formulário
-        $setores = Setor::all();
-
-        // Retorne a view de criação com os setores
-        return view('chamadas.create', compact('setores'));
-    }
-
+    // Marca uma chamada como concluída
     public function concluir(Request $request, $id)
-{
-    $chamada = Chamada::findOrFail($id);
+    {
+        $chamada = Chamada::findOrFail($id);
 
-    // Atualiza o status para 'concluida'
-    $chamada->update(['status' => 'concluida']);
+        // Permite apenas para admin
+        if (!Auth::user()->hasRole('admin')) {
+            return redirect()->back()->withErrors('Ação não autorizada.');
+        }
 
-    return redirect()->back()->with('success', 'Chamada marcada como concluída com sucesso!');
-}
+        $chamada->update(['status' => 'concluida']);
 
+        return redirect()->back()->with('success', 'Chamada marcada como concluída com sucesso!');
+    }
 }

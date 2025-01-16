@@ -12,7 +12,7 @@
                     <h3 class="text-2xl font-semibold">{{ $chamada->titulo }}</h3>
                     <p class="mt-4"><strong>{{ __('Descrição:') }}</strong> {{ $chamada->descricao }}</p>
                     <p><strong>{{ __('Setor:') }}</strong> {{ $chamada->setor->nome }}</p>
-                    <p><strong>{{ __('Prioridade:') }}</strong> 
+                    <p><strong>{{ __('Prioridade:') }}</strong>
                         <span class="px-2 py-1 rounded-full 
                             @if($chamada->prioridade === 'alta') bg-red-500 text-white
                             @elseif($chamada->prioridade === 'media') bg-yellow-500 text-white
@@ -21,6 +21,13 @@
                         </span>
                     </p>
                     <p><strong>{{ __('Status:') }}</strong> {{ ucfirst($chamada->status) }}</p>
+
+                    <!-- Botão de Voltar -->
+                    <div class="mt-4">
+                        <a href="{{ route('chamadas.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded">
+                            {{ __('Voltar para a lista de Chamadas') }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
