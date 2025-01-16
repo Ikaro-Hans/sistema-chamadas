@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChamadaController;
 
@@ -18,6 +17,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/admin/usuarios', [AdminController::class, 'criarUsuario'])->name('admin.usuarios.store');
     });
 });
+
+Route::put('chamadas/{id}/concluir', [ChamadaController::class, 'concluir'])->name('chamadas.concluir');
+
 
 
 Route::get('/', function () {

@@ -11,8 +11,20 @@ use App\Models\Setor;
 
 class ChamadaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+
+    $status = $request->get('status', 'pendente');
+    $query = Chamada::query();
+
+    if ($status !== 'todas') {
+        $query->where('status', '!=', 'concluida');
+    }
+
+    $chamadas = $query->orderBy('created_at', 'desc')->get();
+
+    return view('chamadas.index', compact('chamadas'));
+
         if(Auth::user()->hasRole('admin')) {
             $chamadas = Chamada::all();
 
@@ -61,4 +73,15 @@ class ChamadaController extends Controller
         // Retorne a view de criação com os setores
         return view('chamadas.create', compact('setores'));
     }
+
+    public function concluir(Request $request, $id)
+{
+    $chamada = Chamada::findOrFail($id);
+
+    // Atualiza o status para 'concluida'
+    $chamada->update(['status' => 'concluida']);
+
+    return redirect()->back()->with('success', 'Chamada marcada como concluída com sucesso!');
+}
+
 }

@@ -15,6 +15,25 @@
                         </a>
                     @endif
 
+                    {{-- Filtros --}}
+                    @if(Auth::user()->hasRole('admin'))
+                        <div class="mb-4 flex justify-between items-center">
+                            <form method="GET" action="{{ route('chamadas.index') }}" class="flex items-center space-x-2">
+                                <select name="status" class="border-gray-300 rounded shadow-sm">
+                                    <option value="pendente" {{ request('status') === 'pendente' ? 'selected' : '' }}>
+                                        {{ __('Pendentes') }}
+                                    </option>
+                                    <option value="todas" {{ request('status') === 'todas' ? 'selected' : '' }}>
+                                        {{ __('Todas') }}
+                                    </option>
+                                </select>
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                                    {{ __('Filtrar') }}
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+
                     @if($chamadas->isEmpty())
                         <p class="text-center text-gray-500">{{ __('Nenhuma chamada encontrada.') }}</p>
                     @else
@@ -36,11 +55,21 @@
                                             </span>
                                         </p>
                                     </div>
-                                    <div class="px-4 py-2 flex justify-end">
+                                    <div class="px-4 py-2 flex justify-between items-center">
                                         <a href="{{ route('chamadas.show', $chamada->id) }}" 
                                            class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">
                                             {{ __('Ver Detalhes') }}
                                         </a>
+                                        
+                                        @if(Auth::user()->hasRole('admin') && $chamada->status !== 'concluida')
+                                            <form action="{{ route('chamadas.concluir', $chamada->id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded">
+                                                    {{ __('Concluir') }}
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
