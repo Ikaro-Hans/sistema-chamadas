@@ -25,6 +25,19 @@ Route::middleware(['auth'])->group(function () {
 
 // Rotas do admin
 Route::middleware(['auth', 'can:is-admin'])->prefix('admin')->group(function () {
+    // Listar usuários
+    Route::get('/usuarios', [AdminController::class, 'index'])->name('admin.usuarios.index');
+
+    // Criar um novo usuário (formulário)
+    Route::get('/usuarios/create', [AdminController::class, 'create'])->name('admin.usuarios.create');
+
+    // Salvar um novo usuário
+    Route::post('/usuarios', [AdminController::class, 'store'])->name('admin.usuarios.store');
+
+    // Atualizar o papel de um usuário
+    Route::patch('/usuarios/{id}/role', [AdminController::class, 'updateRole'])->name('admin.usuarios.updateRole');
+
+    // Gerenciamento de chamadas
     Route::get('/chamadas', [AdminController::class, 'listarChamadas'])->name('admin.chamadas');
     Route::post('/usuarios', [AdminController::class, 'criarUsuario'])->name('admin.usuarios.store');
 });

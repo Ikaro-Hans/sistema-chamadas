@@ -14,14 +14,25 @@
 
                     <!-- Botões de navegação -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <a href="{{ ($isAdmin = auth()->user()->hasRole('admin')) ? route('dashboard') : route('chamadas.create') }}"
-                           class="block text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md">
-                            {{ __($isAdmin ? 'Gerenciar Usuários' : 'Criar Nova Chamada') }}
+                        @if(auth()->user()->hasRole('admin'))
+                        <!-- Botão para Gerenciar Usuários -->
+                        <a href="{{ route('admin.usuarios.index') }}"
+                            class="block text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md">
+                            {{ __('Gerenciar Usuários') }}
                         </a>
 
+                        @else
+                        <!-- Botão para Criar Nova Chamada -->
+                        <a href="{{ route('chamadas.create') }}"
+                            class="block text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md">
+                            {{ __('Criar Nova Chamada') }}
+                        </a>
+                        @endif
+
+                        <!-- Botão para Ver Chamadas -->
                         <a href="{{ route('chamadas.index') }}"
-                           class="block text-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md">
-                            {{ __($isAdmin ? 'Ver Chamadas' : 'Ver Minhas Chamadas') }}
+                            class="block text-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md">
+                            {{ auth()->user()->hasRole('admin') ? __('Ver Chamadas') : __('Ver Minhas Chamadas') }}
                         </a>
                     </div>
 
