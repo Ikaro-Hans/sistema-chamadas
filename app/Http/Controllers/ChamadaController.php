@@ -86,4 +86,47 @@ class ChamadaController extends Controller
 
         return redirect()->back()->with('success', 'Chamada marcada como concluída com sucesso!');
     }
+
+    // Exibe o formulário de edição de uma chamada
+    public function edit($id)
+    {
+        // Obtém a chamada ou retorna erro 404
+        $chamada = Chamada::findOrFail($id);
+
+        // Verifica se o usuário tem permissão para editar a chamada
+        if (Auth::id() !== $chamada->user_id) {
+            abort(403, 'Você não tem permissão para editar esta chamada.');
+        }
+
+        // Obtém os setores para exibir no formulário
+        $setores = Setor::all();
+
+        return view('chamadas.edit', compact('chamada', 'setores'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $chamada = Chamada::findOrFail($id);
+
+        // Verifica se o usuário tem permissão para atualizar
+        if (Auth::id() !== $chamada->user_id) {
+            abort(403, 'Você não tem permissão para editar esta chamada.');
+        }
+
+        $validated = $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descricao' => 'required|string',
+            'setor_id' => 'required|exists:setores,id',
+            'prioridade' => 'required|string|in:baixa,media,alta',
+            'arquivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ]);
+
+        if ($request->hasFile('arquivo')) {
+            $validated['arquivo'] = $request->file('arquivo')->store('chamadas', 'public');
+        }
+
+        $chamada->update($validated);
+
+        return redirect()->route('chamadas.index')->with('success', 'Chamada atualizada com sucesso!');
+    }
 }

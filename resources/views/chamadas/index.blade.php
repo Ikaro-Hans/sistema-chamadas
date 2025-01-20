@@ -63,12 +63,30 @@
                                 </p>
                                 @endif
                             </div>
-                            <div class="px-4 py-2 flex justify-between items-center">
+                            <div class="px-4 py-2 flex flex-wrap gap-2">
                                 <a href="{{ route('chamadas.show', $chamada->id) }}"
                                     class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">
                                     {{ __('Ver Detalhes') }}
                                 </a>
 
+                                <!-- Editar chamada apenas para o usuário que criou -->
+                                @if(Auth::id() === $chamada->user_id)
+                                <a href="{{ route('chamadas.edit', $chamada->id) }}"
+                                    class="bg-yellow-500 hover:bg-yellow-700 text-white px-4 py-2 rounded">
+                                    {{ __('Editar') }}
+                                </a>
+
+                                <!-- Excluir chamada apenas para o usuário que criou -->
+                                <form action="{{ route('chamadas.destroy', $chamada->id) }}" method="POST" onsubmit="return confirm('Tem certeza de que deseja excluir esta chamada?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded">
+                                        {{ __('Excluir') }}
+                                    </button>
+                                </form>
+                                @endif
+
+                                <!-- Concluir chamada para admin -->
                                 @if(Auth::user()->hasRole('admin') && $chamada->status !== 'concluida')
                                 <form action="{{ route('chamadas.concluir', $chamada->id) }}" method="POST">
                                     @csrf

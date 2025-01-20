@@ -19,6 +19,6 @@ class Chamada extends Model
 
     public function setor()
     {
-        return $this->belongsTo(Setor::class);
+        return $this->belongsTo(Setor::class, 'setor_id');
     }
 }
