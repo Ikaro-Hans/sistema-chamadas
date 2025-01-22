@@ -45,9 +45,19 @@
                             <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                             @enderror
                         </div>
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                            {{ __('Criar') }}
-                        </button>
+
+                        <div class="flex justify-between items-center mb-6">
+                            <!-- Botão Voltar -->
+                            <button onclick="history.back()" class="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded">
+                                {{ __('Voltar') }}
+                            </button>
+
+                            <!-- Botão Criar -->
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                                {{ __('Criar') }}
+                            </button>
+                        </div>
+
                     </form>
                 </div>
             </div>

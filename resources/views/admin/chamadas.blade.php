@@ -21,26 +21,26 @@
                         </thead>
                         <tbody>
                             @foreach($chamadas as $chamada)
-                                <tr>
-                                    <td class="border px-4 py-2">{{ $chamada->titulo }}</td>
-                                    <td class="border px-4 py-2">{{ $chamada->user->name }}</td>
-                                    <td class="border px-4 py-2">{{ $chamada->setor->nome }}</td>
-                                    <td class="border px-4 py-2">{{ ucfirst($chamada->prioridade) }}</td>
-                                    <td class="border px-4 py-2">
-                                        <form action="{{ route('admin.chamadas.atualizar', $chamada->id) }}" method="POST">
-                                            @csrf
-                                            @method('PUT')
-                                            <select name="status" class="border rounded dark:bg-gray-700 dark:text-gray-300">
-                                                <option value="pendente">{{ __('Pendente') }}</option>
-                                                <option value="em andamento">{{ __('Em Andamento') }}</option>
-                                                <option value="concluído">{{ __('Concluído') }}</option>
-                                            </select>
-                                            <button type="submit" class="bg-green-500 text-white px-4 py-1 rounded">
-                                                {{ __('Atualizar') }}
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td class="border px-4 py-2">{{ $chamada->titulo }}</td>
+                                <td class="border px-4 py-2">{{ $chamada->user->name }}</td>
+                                <td class="border px-4 py-2">{{ $chamada->setor->nome }}</td>
+                                <td class="border px-4 py-2">{{ ucfirst($chamada->prioridade) }}</td>
+                                <td class="border px-4 py-2">
+                                    <form action="{{ route('admin.chamadas.atualizar', $chamada->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <select name="status" class="border rounded dark:bg-gray-700 dark:text-gray-300">
+                                            <option value="pendente">{{ __('Pendente') }}</option>
+                                            <option value="em andamento">{{ __('Em Andamento') }}</option>
+                                            <option value="concluído">{{ __('Concluído') }}</option>
+                                        </select>
+                                        <button type="submit" class="bg-green-500 text-white px-4 py-1 rounded">
+                                            {{ __('Atualizar') }}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>
