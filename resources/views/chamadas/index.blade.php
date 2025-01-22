@@ -91,7 +91,7 @@
                                 @endif
 
                                 @if(Auth::user()->hasRole('admin') && $chamada->status !== 'concluida')
-                                <form action="{{ route('chamadas.concluir', $chamada->id) }}" method="POST" class="w-full sm:w-auto">
+                                <form action="{{ route('chamadas.concluir', $chamada->id) }}" method="POST" onsubmit="return confirm('Tem certeza de que deseja concluir esta chamada?');" class="w-full sm:w-auto">
                                     @csrf
                                     @method('PUT')
                                     <button type="submit" class="bg-green-500 hover:bg-green-700 text-white text-sm px-4 py-2 rounded w-full sm:w-auto text-center">

@@ -129,4 +129,23 @@ class ChamadaController extends Controller
 
         return redirect()->route('chamadas.index')->with('success', 'Chamada atualizada com sucesso!');
     }
+
+    public function destroy($id)
+    {
+        // Encontre a chamada pelo ID
+        $chamada = Chamada::findOrFail($id);
+
+        // Verifique se o usuário tem permissão para excluir
+        if (Auth::id() !== $chamada->user_id) {
+            return redirect()->route('chamadas.index')
+                ->with('error', __('Você não tem permissão para excluir esta chamada.'));
+        }
+
+        // Exclua a chamada
+        $chamada->delete();
+
+        // Retorne com uma mensagem de sucesso
+        return redirect()->route('chamadas.index')
+            ->with('success', __('Chamada excluída com sucesso.'));
+    }
 }
