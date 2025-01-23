@@ -21,4 +21,9 @@ class Chamada extends Model
     {
         return $this->belongsTo(Setor::class, 'setor_id');
     }
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

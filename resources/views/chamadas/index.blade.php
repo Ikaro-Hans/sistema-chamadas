@@ -40,37 +40,45 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         @foreach($chamadas as $chamada)
                         <div class="bg-white dark:bg-gray-700 shadow-lg rounded-lg border border-gray-300 overflow-hidden">
-                            <!-- Cabeçalho do card -->
-                            <div class="flex items-center justify-between px-4 py-3 bg-blue-500 text-white rounded-t-lg">
-                                <div class="font-semibold text-lg truncate">{{ $chamada->titulo }}</div>
-                                <span class="text-sm bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
-                                    {{ ucfirst($chamada->status) }}
-                                </span>
+                            <!-- Estrutura do Card -->
+                            <div class="flex">
+                                <!-- Imagem ou Ícone -->
+                                <div class="w-1/3 bg-gray-200 relative">
+                                    @if($chamada->arquivo)
+                                    <!-- Se houver um arquivo, exibe a imagem -->
+                                    <img src="{{ asset('storage/' . $chamada->arquivo) }}"
+                                        alt="{{ $chamada->titulo }}"
+                                        class="h-full w-full object-cover">
+                                    @else
+                                    <!-- Se não houver arquivo, exibe um ícone -->
+                                    <div class="flex justify-center items-center h-full bg-gray-300 text-gray-600">
+                                        <i class="fas fa-file-alt text-gray-500 text-4xl"></i>
+                                    </div>
+
+                                    @endif
+                                </div>
+
+                                <!-- Conteúdo -->
+                                <div class="w-2/3 p-4">
+                                    <h5 class="font-bold text-lg text-gray-800 dark:text-gray-200 truncate">{{ $chamada->titulo }}</h5>
+                                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                                        <strong>{{ __('Setor:') }}</strong> {{ $chamada->setor->nome }}
+                                    </p>
+                                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                                        <strong>{{ __('Prioridade:') }}</strong>
+                                        <span class="px-2 py-1 rounded-full 
+                                                    @if($chamada->prioridade === 'alta') bg-red-500 text-white
+                                                    @elseif($chamada->prioridade === 'media') bg-yellow-500 text-white
+                                                    @else bg-green-500 text-white @endif">
+                                            {{ ucfirst($chamada->prioridade) }}
+                                        </span>
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-3">{{ __('Atualizado: ') . $chamada->updated_at->diffForHumans() }}</p>
+                                </div>
                             </div>
 
-                            <!-- Corpo do card -->
-                            <div class="px-4 py-3">
-                                <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                                    <strong>{{ __('Setor:') }}</strong> {{ $chamada->setor->nome }}
-                                </p>
-                                <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                                    <strong>{{ __('Prioridade:') }}</strong>
-                                    <span class="px-2 py-1 rounded-full 
-                            @if($chamada->prioridade === 'alta') bg-red-500 text-white
-                            @elseif($chamada->prioridade === 'media') bg-yellow-500 text-white
-                            @else bg-green-500 text-white @endif">
-                                        {{ ucfirst($chamada->prioridade) }}
-                                    </span>
-                                </p>
-                                @if($chamada->arquivo)
-                                <p class="text-sm text-blue-500 hover:underline">
-                                    <a href="{{ asset('storage/' . $chamada->arquivo) }}" target="_blank">{{ __('Ver Anexo') }}</a>
-                                </p>
-                                @endif
-                            </div>
-
-                            <!-- Rodapé do card -->
-                            <div class="px-4 py-2 flex flex-wrap gap-2">
+                            <!-- Botões de Ação -->
+                            <div class="p-4 flex flex-wrap gap-2">
                                 <a href="{{ route('chamadas.show', $chamada->id) }}"
                                     class="bg-blue-500 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded w-full sm:w-auto text-center">
                                     {{ __('Ver Detalhes') }}
@@ -103,7 +111,6 @@
                         </div>
                         @endforeach
                     </div>
-
                     @endif
                 </div>
             </div>
