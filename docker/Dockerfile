@@ -33,11 +33,6 @@ RUN npm install -g yarn
 RUN yarn install
 RUN yarn build
 
-
-RUN php artisan storage:link
-RUN php artisan config:clear
-RUN php artisan cache:clear
-
 # Copy Laravel Horizon configuration to the appropriate location
 # COPY /docker/horizon.conf /opt/docker/etc/supervisor.d/horizon.conf
 
