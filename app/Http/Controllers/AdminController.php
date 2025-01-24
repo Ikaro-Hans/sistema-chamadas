@@ -35,7 +35,7 @@ class AdminController extends Controller
         }
 
         // Ordenar por nome e paginar os resultados
-        $usuarios = $query->orderBy('name')->paginate(10);
+        $usuarios = $query->whereNot('id', auth()->id())->orderBy('name')->paginate(10);
 
         return view('admin.usuarios.index', compact('usuarios'));
     }
