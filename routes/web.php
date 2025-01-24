@@ -42,7 +42,6 @@ Route::middleware(['auth', 'can:is-admin'])->prefix('admin')->group(function () 
 
     // Gerenciamento de chamadas
     Route::get('/chamadas', [AdminController::class, 'listarChamadas'])->name('admin.chamadas');
-    Route::post('/usuarios', [AdminController::class, 'criarUsuario'])->name('admin.usuarios.store');
 });
 
 // Rota inicial
