@@ -18,11 +18,29 @@ class AdminController extends Controller
     }
 
     // Exibe a lista de usuários
-    public function index()
+    public function index(Request $request)
     {
-        $usuarios = User::orderBy('created_at', 'desc')->get();
+        $query = User::query();
+
+        // Filtrar por nome
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Filtrar por cargo (role)
+        if ($request->filled('role') && $request->role !== 'todos') {
+            $query->whereHas('roles', function ($q) use ($request) {
+                $q->where('name', $request->role);
+            });
+        }
+
+        // Ordenar por nome e paginar os resultados
+        $usuarios = $query->orderBy('name')->paginate(10);
+
         return view('admin.usuarios.index', compact('usuarios'));
     }
+
+
 
 
     // Cria um novo usuário

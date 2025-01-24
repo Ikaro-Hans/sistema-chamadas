@@ -21,6 +21,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/chamadas/{id}/arquivo', [ChamadaController::class, 'visualizarAnexo'])
+        ->name('chamadas.visualizar_anexo');
 });
 
 // Rotas do admin

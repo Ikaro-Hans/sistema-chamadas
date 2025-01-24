@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Chamada;
 use App\Models\Setor;
+use Illuminate\Support\Facades\Storage;
 
 class ChamadaController extends Controller
 {
@@ -38,31 +39,32 @@ class ChamadaController extends Controller
     // Salva uma nova chamada
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validatedData = $request->validate([
             'titulo' => 'required|string|max:255',
             'descricao' => 'required|string',
             'setor_id' => 'required|exists:setores,id',
-            'prioridade' => 'required|string|in:baixa,media,alta',
-            'arquivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'prioridade' => 'required|in:alta,media,baixa',
+            'arquivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        $arquivoPath = null;
+        $chamada = new Chamada();
+        $chamada->titulo = $validatedData['titulo'];
+        $chamada->descricao = $validatedData['descricao'];
+        $chamada->setor_id = $validatedData['setor_id'];
+        $chamada->prioridade = $validatedData['prioridade'];
+        $chamada->user_id = Auth::id();
+        $chamada->status = 'pendente';
+
         if ($request->hasFile('arquivo')) {
-            $arquivoPath = $request->file('arquivo')->store('chamadas', 'public');
+            $filePath = $request->file('arquivo')->store('chamadas', 'public');
+            $chamada->arquivo = $filePath;
         }
 
-        Chamada::create([
-            'titulo' => $validated['titulo'],
-            'descricao' => $validated['descricao'],
-            'setor_id' => $validated['setor_id'],
-            'prioridade' => $validated['prioridade'],
-            'arquivo' => $arquivoPath,
-            'status' => 'pendente',
-            'user_id' => Auth::id(),
-        ]);
+        $chamada->save();
 
         return redirect()->route('chamadas.index')->with('success', 'Chamada criada com sucesso!');
     }
+
 
     // Exibe os detalhes de uma chamada
     public function show($id)
@@ -104,29 +106,63 @@ class ChamadaController extends Controller
         return view('chamadas.edit', compact('chamada', 'setores'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Chamada $chamada)
+    {
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descricao' => 'required|string',
+            'arquivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Validação para o arquivo
+        ]);
+
+        $chamada->titulo = $request->titulo;
+        $chamada->descricao = $request->descricao;
+        $chamada->setor_id = $request->setor_id;
+        $chamada->prioridade = $request->prioridade;
+
+        // Verifica e salva o novo arquivo (se enviado)
+        if ($request->hasFile('arquivo')) {
+            // Remove o arquivo antigo, se existir
+            if ($chamada->arquivo && Storage::disk('public')->exists($chamada->arquivo)) {
+                Storage::disk('public')->delete($chamada->arquivo);
+            }
+
+            $filePath = $request->file('arquivo')->store('chamadas', 'public');
+            $chamada->arquivo = $filePath;
+        }
+
+        $chamada->save();
+
+        return redirect()->route('chamadas.index')->with('success', 'Chamada atualizada com sucesso!');
+    }
+
+
+    public function destroy($id)
+    {
+        // Encontre a chamada pelo ID
+        $chamada = Chamada::findOrFail($id);
+
+        // Verifique se o usuário tem permissão para excluir
+        if (Auth::id() !== $chamada->user_id) {
+            return redirect()->route('chamadas.index')
+                ->with('error', __('Você não tem permissão para excluir esta chamada.'));
+        }
+
+        // Exclua a chamada
+        $chamada->delete();
+
+        // Retorne com uma mensagem de sucesso
+        return redirect()->route('chamadas.index')
+            ->with('success', __('Chamada excluída com sucesso.'));
+    }
+
+    public function visualizarAnexo($id)
     {
         $chamada = Chamada::findOrFail($id);
 
-        // Verifica se o usuário tem permissão para atualizar
-        if (Auth::id() !== $chamada->user_id) {
-            abort(403, 'Você não tem permissão para editar esta chamada.');
+        if ($chamada->arquivo) {
+            return response()->file(storage_path('app/public/' . $chamada->arquivo));
         }
 
-        $validated = $request->validate([
-            'titulo' => 'required|string|max:255',
-            'descricao' => 'required|string',
-            'setor_id' => 'required|exists:setores,id',
-            'prioridade' => 'required|string|in:baixa,media,alta',
-            'arquivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-        ]);
-
-        if ($request->hasFile('arquivo')) {
-            $validated['arquivo'] = $request->file('arquivo')->store('chamadas', 'public');
-        }
-
-        $chamada->update($validated);
-
-        return redirect()->route('chamadas.index')->with('success', 'Chamada atualizada com sucesso!');
+        abort(404, 'Arquivo não encontrado.');
     }
 }
