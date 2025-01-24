@@ -46,7 +46,7 @@ Route::middleware(['auth', 'can:is-admin'])->prefix('admin')->group(function () 
 
 // Rota inicial
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('dashboard');
 });
 
 // Autenticação
