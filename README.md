@@ -30,6 +30,10 @@
 4. Crie o banco de dados
 
 ```bash
+    php artisan db:create
+```
+
+```bash
     php artisan migrate --seed
 ```
 
