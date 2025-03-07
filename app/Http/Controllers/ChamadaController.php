@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Chamada;
 use App\Models\Setor;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class ChamadaController extends Controller
 {
@@ -59,7 +60,6 @@ class ChamadaController extends Controller
             $filePath = $request->file('arquivo')->store('chamadas', 'public');
             $chamada->arquivo = $filePath;
         }
-
         $chamada->save();
 
         return redirect()->route('chamadas.index')->with('success', 'Chamada criada com sucesso!');
@@ -164,5 +164,25 @@ class ChamadaController extends Controller
         }
 
         abort(404, 'Arquivo não encontrado.');
+    }
+
+    public function chamadosGraficos()
+    {
+    // Dados para gráfico de chamados por dia na última semana
+    $dias = collect(range(0, 6))->map(function ($i) {
+        return Carbon::now()->subDays($i)->format('Y-m-d');
+    })->reverse();
+
+    $chamadosPorDia = $dias->mapWithKeys(function ($dia) {
+        return [$dia => Chamada::whereDate('created_at', $dia)->count()];
+    });
+
+    // Dados para gráfico de chamados por setor
+    $chamadosPorSetor = Chamada::join('setores', 'chamadas.setor_id', '=', 'setores.id')
+    ->selectRaw('setores.nome as setor, COUNT(*) as total')
+    ->groupBy('setores.nome')
+    ->pluck('total', 'setor');
+
+    return view('chamadas.graficos', compact('chamadosPorDia', 'chamadosPorSetor'));
     }
 }
